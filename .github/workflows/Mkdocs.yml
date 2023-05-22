@@ -1,36 +1,20 @@
-name: Deploy to GitHub Pages
-
-on: 
-  push:
-    branches:  
-      - main
-
+name: Deploy to Github Pages
+on:
+    push:
+      branches:
+        - master
+        - main
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-      with: 
-        ref: main
-    - name: Setup Python
-      uses: actions/setup-python@v2
-      with: 
-        python-version: 3.7
-    - name: Install dependencies  
-      run: pip install mkdocs
-    - name: Build the site  
-      run: mkdocs build -f Test/test/mkdocs.yml 
-    - name: Checkout gh-pages  
-      run: |
-        git checkout gh-pages
-        git pull
-    - name: Copy site contents  
-      run: |  
-        cp -r Test/test/site/* .
-    - name: Commit and push changes  
-      run: |
-        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add .
-        git commit -m "Update site"
-        git push origin gh-pages
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-python@v2
+          with:
+            python-version: 3.x
+        - uses: actions/cache@v2
+          with:
+            key: ${{ github.ref }}
+            path: .cache
+        - run: pip install mkdocs-material
+        - run: mkdocs gh-deploy --force
